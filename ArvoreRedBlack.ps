@@ -1,0 +1,1703 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 24 24 571 818
+%%Title: Enscript Output
+%%For: 
+%%Creator: GNU Enscript 1.6.6
+%%CreationDate: Thu Nov 19 21:21:51 2026
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 6
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 6
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 9 9 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+/d_page_w 794 def
+/d_page_h 547 def
+/d_header_x 0 def
+/d_header_y 547 def
+/d_header_w 794 def
+/d_header_h 0 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 794 def
+/d_footer_h 0 def
+/d_output_w 794 def
+/d_output_h 547 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (main.c) def
+/fdir (.) def
+/ftail (main.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(#include "TreeRedBlack.h") s
+5 515 M
+(void limpaBuffer\(\) {) s
+5 505 M
+(    int c;) s
+5 495 M
+(    while \(\(c = getchar\(\)\) != '\\n' && c != EOF\);) s
+5 485 M
+(}) s
+5 465 M
+(void opcoes\(\) {) s
+5 455 M
+(    printf\("1 - Cadastrar Produto\\n"\);) s
+5 445 M
+(    printf\("2 - Buscar Produto\\n"\);) s
+5 435 M
+(    printf\("3 - Alterar Produto\\n"\);) s
+5 425 M
+(    printf\("4 - Mostrar Produtos em Ordem\\n"\);) s
+5 415 M
+(    printf\("5 - Mostrar Produtos por Nivel\\n"\);) s
+5 405 M
+(    printf\("6 - Remover Produto\\n"\);) s
+5 395 M
+(    printf\("0 - Finalizar\\n"\);) s
+5 385 M
+(}) s
+5 365 M
+(int main\(\) {) s
+5 355 M
+(    RBTree *arvore = initialize\(\);) s
+5 335 M
+(    if \(arvore == NULL\) {) s
+5 325 M
+(        printf\("Erro ao inicializar a arvore\\n"\);) s
+5 315 M
+(        return 1;) s
+5 305 M
+(    }) s
+5 285 M
+(    int op;) s
+5 275 M
+(    char codProduto[21];) s
+5 265 M
+(    bool func = 1;) s
+5 245 M
+(    while \(func == 1\) {) s
+5 235 M
+(        printf\("\\nEscolha uma opcao:\\n"\);) s
+5 225 M
+(        opcoes\(\);) s
+5 215 M
+(        scanf\("%d", &op\);) s
+5 205 M
+(        limpaBuffer\(\);) s
+5 185 M
+(        switch \(op\) {) s
+5 175 M
+(        case 1:) s
+5 165 M
+(            printf\("Digite o codigo do produto ate 20 char: "\);) s
+5 155 M
+(            fgets\(codProduto, 21, stdin\);) s
+5 145 M
+(            codProduto[strcspn\(codProduto, "\\n"\)] = '\\0';) s
+5 125 M
+(            inserirNo\(arvore, codProduto\);) s
+5 115 M
+(            break;) s
+5 95 M
+(        case 2:) s
+5 85 M
+(            printf\("Digite o codigo do produto que deseja buscar: "\);) s
+5 75 M
+(            fgets\(codProduto, 21, stdin\);) s
+5 65 M
+(            codProduto[strcspn\(codProduto, "\\n"\)] = '\\0';) s
+5 45 M
+(            Prod *achou = buscar\(arvore->raiz, arvore->nil, codProduto\);) s
+5 25 M
+(            if \(achou != NULL\) {) s
+5 15 M
+(                exibirProd\(achou\);) s
+5 5 M
+(            } else {) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 2 def
+/fname (main.c) def
+/fdir (.) def
+/ftail (main.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(                printf\("Produto nao encontrado!\\n"\);) s
+5 525 M
+(            }) s
+5 515 M
+(            break;) s
+5 495 M
+(        case 3:) s
+5 485 M
+(            printf\("Digite o codigo do produto que deseja alterar: "\);) s
+5 475 M
+(            fgets\(codProduto, 21, stdin\);) s
+5 465 M
+(            codProduto[strcspn\(codProduto, "\\n"\)] = '\\0';) s
+5 445 M
+(            alterarProduto\(arvore, codProduto\);) s
+5 435 M
+(            break;) s
+5 415 M
+(        case 4:) s
+5 405 M
+(            exibirEmOrdem\(arvore\);) s
+5 395 M
+(            break;) s
+5 375 M
+(        case 5:) s
+5 365 M
+(            porNivel\(arvore\);) s
+5 355 M
+(            break;) s
+5 335 M
+(        case 6:) s
+5 325 M
+(            printf\("Digite o codigo do produto que deseja remover: "\);) s
+5 315 M
+(            fgets\(codProduto, 21, stdin\);) s
+5 305 M
+(            codProduto[strcspn\(codProduto, "\\n"\)] = '\\0';) s
+5 285 M
+(            removerNo\(arvore, codProduto\);) s
+5 275 M
+(            break;) s
+5 255 M
+(        case 0:) s
+5 245 M
+(            destroy\(arvore\);) s
+5 235 M
+(            func = 0;) s
+5 225 M
+(            break;) s
+5 205 M
+(        default:) s
+5 195 M
+(            printf\("Opcao invalida!\\n"\);) s
+5 185 M
+(            break;) s
+5 175 M
+(        }) s
+5 165 M
+(    }) s
+5 145 M
+(    return 0;) s
+5 135 M
+(}) s
+_R
+S
+%%Page: (1) 3
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (TreeRedBlack.c) def
+/fdir (.) def
+/ftail (TreeRedBlack.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(#include "TreeRedBlack.h") s
+5 525 M
+(#include <string.h>) s
+5 505 M
+(typedef struct queueNode {) s
+5 495 M
+(    RBNode *no;) s
+5 485 M
+(    struct queueNode *prox;) s
+5 475 M
+(} queueNode;) s
+5 455 M
+(typedef struct queue {) s
+5 445 M
+(    queueNode *inicio;) s
+5 435 M
+(    queueNode *fim;) s
+5 425 M
+(} Queue;) s
+5 405 M
+(void initializeQueue\(Queue *p\) {) s
+5 385 M
+(    p->inicio = NULL;) s
+5 375 M
+(    p->fim = NULL;) s
+5 365 M
+(}) s
+5 345 M
+(bool isQueueEmpty\(Queue *p\) { return p->inicio == NULL; }) s
+5 325 M
+(void enQueue\(Queue *p, RBNode *no\) {) s
+5 315 M
+(    queueNode *novo;) s
+5 305 M
+(    novo = \(queueNode *\)malloc\(sizeof\(queueNode\)\);) s
+5 295 M
+(    if \(novo == NULL\) return;) s
+5 275 M
+(    novo->no = no;) s
+5 265 M
+(    novo->prox = NULL;) s
+5 255 M
+(    if \(isQueueEmpty\(p\)\) {) s
+5 245 M
+(        p->inicio = novo;) s
+5 235 M
+(        p->fim = novo;) s
+5 225 M
+(    } else {) s
+5 215 M
+(        p->fim->prox = novo;) s
+5 205 M
+(        p->fim = novo;) s
+5 195 M
+(    }) s
+5 185 M
+(}) s
+5 165 M
+(RBNode *deQueue\(Queue *p\) {) s
+5 155 M
+(    queueNode *q;) s
+5 145 M
+(    RBNode *nozinho;) s
+5 125 M
+(    if \(isQueueEmpty\(p\)\) return NULL;) s
+5 105 M
+(    q = p->inicio;) s
+5 95 M
+(    p->inicio = p->inicio->prox;) s
+5 75 M
+(    nozinho = q->no;) s
+5 65 M
+(    free\(q\);) s
+5 55 M
+(    if \(p->inicio == NULL\) { p->fim = NULL; }) s
+5 45 M
+(    return nozinho;) s
+5 35 M
+(}) s
+5 15 M
+(RBNode *criarRBNode\(Prod *produto, RBNode *nil\) {) s
+_R
+S
+%%Page: (2) 4
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 2 def
+/fname (TreeRedBlack.c) def
+/fdir (.) def
+/ftail (TreeRedBlack.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(    RBNode *novoNo = \(RBNode *\)malloc\(sizeof\(RBNode\)\);) s
+5 515 M
+(    if \(novoNo == NULL\) return NULL;) s
+5 495 M
+(    novoNo->produto = produto;) s
+5 485 M
+(    novoNo->cor = RED;) s
+5 475 M
+(    novoNo->dir = nil;) s
+5 465 M
+(    novoNo->esq = nil;) s
+5 455 M
+(    novoNo->pai = nil;) s
+5 435 M
+(    return novoNo;) s
+5 425 M
+(}) s
+5 415 M
+(RBNode *criarSentinela\(\) {) s
+5 395 M
+(    RBNode *nil = \(RBNode *\)malloc\(sizeof\(RBNode\)\);) s
+5 375 M
+(    if \(nil == NULL\) return NULL;) s
+5 355 M
+(    nil->cor = BLACK;) s
+5 345 M
+(    nil->dir = nil;) s
+5 335 M
+(    nil->esq = nil;) s
+5 325 M
+(    nil->pai = nil;) s
+5 315 M
+(    nil->produto = NULL;) s
+5 295 M
+(    return nil;) s
+5 285 M
+(}) s
+5 265 M
+(RBTree *initialize\(\) {) s
+5 255 M
+(    RBTree *arvore = \(RBTree *\)malloc\(sizeof\(RBTree\)\);) s
+5 235 M
+(    if \(arvore == NULL\) return NULL;) s
+5 215 M
+(    arvore->nil = criarSentinela\(\);) s
+5 195 M
+(    if \(arvore->nil == NULL\) {) s
+5 185 M
+(        free\(arvore\);) s
+5 175 M
+(        return NULL;) s
+5 165 M
+(    }) s
+5 155 M
+(    arvore->raiz = arvore->nil;) s
+5 135 M
+(    return arvore;) s
+5 125 M
+(}) s
+5 105 M
+(Prod *buscar\(RBNode *raiz, RBNode *nil, char *codProd\) {) s
+5 95 M
+(    RBNode *NoBuscar = raiz;) s
+5 75 M
+(    if \(NoBuscar == nil\) return NULL;) s
+5 55 M
+(    if \(strcmp\(codProd, NoBuscar->produto->codProd\) == 0\) {) s
+5 45 M
+(        return NoBuscar->produto;) s
+5 35 M
+(    } else if \(strcmp\(codProd, NoBuscar->produto->codProd\) < 0\) {) s
+5 25 M
+(        return buscar\(NoBuscar->esq, nil, codProd\);) s
+5 15 M
+(    } else {) s
+5 5 M
+(        return buscar\(NoBuscar->dir, nil, codProd\);) s
+_R
+S
+%%Page: (3) 5
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 3 def
+/fname (TreeRedBlack.c) def
+/fdir (.) def
+/ftail (TreeRedBlack.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(    }) s
+5 525 M
+(}) s
+5 505 M
+(void emOrdem\(RBNode *raiz, RBNode *nil\) {) s
+5 495 M
+(    if \(raiz != nil\) {) s
+5 485 M
+(        emOrdem\(raiz->esq, nil\);) s
+5 475 M
+(        exibirProd\(raiz->produto\);) s
+5 465 M
+(        printf\("Cor do no: %s\\n", raiz->cor == RED ? "RED" : "BLACK"\);) s
+5 455 M
+(        emOrdem\(raiz->dir, nil\);) s
+5 445 M
+(    }) s
+5 435 M
+(}) s
+5 425 M
+(void exibirEmOrdem\(RBTree *arvore\) {) s
+5 415 M
+(    if \(arvore->raiz == arvore->nil\) {) s
+5 405 M
+(        printf\("Arvore esta vazia"\);) s
+5 395 M
+(    } else {) s
+5 385 M
+(        emOrdem\(arvore->raiz, arvore->nil\);) s
+5 375 M
+(    }) s
+5 365 M
+(}) s
+5 355 M
+(RBNode *min\(RBTree *arvore, RBNode *novo\) {) s
+5 345 M
+(    while \(novo->esq != arvore->nil\) { novo = novo->esq; }) s
+5 325 M
+(    return novo;) s
+5 315 M
+(}) s
+5 305 M
+(void destroy\(RBTree *arvore\) {) s
+5 295 M
+(    RBNode *No;) s
+5 285 M
+(    Queue filaNo;) s
+5 275 M
+(    if \(arvore->raiz == arvore->nil\) {) s
+5 265 M
+(        printf\("Arvore vazia"\);) s
+5 255 M
+(    } else {) s
+5 245 M
+(        initializeQueue\(&filaNo\);) s
+5 235 M
+(        No = arvore->raiz;) s
+5 225 M
+(        enQueue\(&filaNo, No\);) s
+5 215 M
+(        while \(!isQueueEmpty\(&filaNo\)\) {) s
+5 205 M
+(            No = deQueue\(&filaNo\);) s
+5 195 M
+(            if \(No->esq != arvore->nil\) { enQueue\(&filaNo, No->esq\); }) s
+5 185 M
+(            if \(No->dir != arvore->nil\) { enQueue\(&filaNo, No->dir\); }) s
+5 175 M
+(            destroyProd\(No->produto\);) s
+5 165 M
+(            free\(No\);) s
+5 155 M
+(        }) s
+5 145 M
+(    }) s
+5 135 M
+(    free\(arvore->nil\);) s
+5 125 M
+(    free\(arvore\);) s
+5 115 M
+(}) s
+5 105 M
+(void porNivel\(RBTree *arvore\) {) s
+5 95 M
+(    RBNode *No;) s
+5 85 M
+(    Queue filaNo;) s
+5 75 M
+(    if \(arvore->raiz == arvore->nil\) {) s
+5 65 M
+(        printf\("Arvore vazia"\);) s
+5 55 M
+(    } else {) s
+5 45 M
+(        initializeQueue\(&filaNo\);) s
+5 35 M
+(        No = arvore->raiz;) s
+5 25 M
+(        enQueue\(&filaNo, No\);) s
+5 15 M
+(        while \(!isQueueEmpty\(&filaNo\)\) {) s
+5 5 M
+(            No = deQueue\(&filaNo\);) s
+_R
+S
+%%Page: (4) 6
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 4 def
+/fname (TreeRedBlack.c) def
+/fdir (.) def
+/ftail (TreeRedBlack.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(            if \(No == arvore->nil\) {) s
+5 525 M
+(                printf\("null\\n"\);) s
+5 515 M
+(            } else {) s
+5 505 M
+(                enQueue\(&filaNo, No->esq\);) s
+5 495 M
+(                enQueue\(&filaNo, No->dir\);) s
+5 485 M
+(                exibirProd\(No->produto\);) s
+5 475 M
+(                printf\("Cor do no: %s\\n", No->cor == RED ? "RED" : "BLACK"\);) s
+5 465 M
+(            }) s
+5 455 M
+(        }) s
+5 445 M
+(        printf\("\\n"\);) s
+5 435 M
+(    }) s
+5 425 M
+(}) s
+5 415 M
+(void rotEsq\(RBTree *arvore, RBNode *x\) {) s
+5 405 M
+(    RBNode *y = x->dir;) s
+5 385 M
+(    x->dir = y->esq;) s
+5 365 M
+(    if \(y->esq != arvore->nil\) y->esq->pai = x;) s
+5 345 M
+(    y->pai = x->pai;) s
+5 325 M
+(    if \(x->pai == arvore->nil\) arvore->raiz = y;) s
+5 315 M
+(    else if \(x == x->pai->esq\)) s
+5 305 M
+(        x->pai->esq = y;) s
+5 295 M
+(    else) s
+5 285 M
+(        x->pai->dir = y;) s
+5 265 M
+(    y->esq = x;) s
+5 255 M
+(    x->pai = y;) s
+5 245 M
+(}) s
+5 225 M
+(void rotDir\(RBTree *arvore, RBNode *y\) {) s
+5 215 M
+(    RBNode *x = y->esq;) s
+5 195 M
+(    y->esq = x->dir;) s
+5 175 M
+(    if \(x->dir != arvore->nil\) x->dir->pai = y;) s
+5 155 M
+(    x->pai = y->pai;) s
+5 135 M
+(    if \(y->pai == arvore->nil\) arvore->raiz = x;) s
+5 125 M
+(    else if \(y == y->pai->esq\)) s
+5 115 M
+(        y->pai->esq = x;) s
+5 105 M
+(    else) s
+5 95 M
+(        y->pai->dir = x;) s
+5 75 M
+(    x->dir = y;) s
+5 65 M
+(    y->pai = x;) s
+5 55 M
+(}) s
+5 35 M
+(void inserirAjuste\(RBTree *arvore, RBNode *novo\) {) s
+5 25 M
+(    while \(novo->pai->cor == RED\) {) s
+5 15 M
+(        if \(novo->pai == novo->pai->pai->esq\) {) s
+5 5 M
+(            RBNode *tio = novo->pai->pai->dir;) s
+_R
+S
+%%Page: (5) 7
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 5 def
+/fname (TreeRedBlack.c) def
+/fdir (.) def
+/ftail (TreeRedBlack.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(            if \(tio->cor == RED\) {) s
+5 525 M
+(                novo->pai->cor = BLACK;) s
+5 515 M
+(                tio->cor = BLACK;) s
+5 505 M
+(                novo->pai->pai->cor = RED;) s
+5 495 M
+(                novo = novo->pai->pai;) s
+5 485 M
+(            } else {) s
+5 475 M
+(                if \(novo == novo->pai->dir\) {) s
+5 465 M
+(                    novo = novo->pai;) s
+5 455 M
+(                    rotEsq\(arvore, novo\);) s
+5 445 M
+(                }) s
+5 435 M
+(                novo->pai->cor = BLACK;) s
+5 425 M
+(                novo->pai->pai->cor = RED;) s
+5 415 M
+(                rotDir\(arvore, novo->pai->pai\);) s
+5 405 M
+(            }) s
+5 395 M
+(        } else {) s
+5 385 M
+(            RBNode *tio = novo->pai->pai->esq;) s
+5 375 M
+(            if \(tio->cor == RED\) {) s
+5 365 M
+(                novo->pai->cor = BLACK;) s
+5 355 M
+(                tio->cor = BLACK;) s
+5 345 M
+(                novo->pai->pai->cor = RED;) s
+5 335 M
+(                novo = novo->pai->pai;) s
+5 325 M
+(            } else {) s
+5 315 M
+(                if \(novo == novo->pai->esq\) {) s
+5 305 M
+(                    novo = novo->pai;) s
+5 295 M
+(                    rotDir\(arvore, novo\);) s
+5 285 M
+(                }) s
+5 275 M
+(                novo->pai->cor = BLACK;) s
+5 265 M
+(                novo->pai->pai->cor = RED;) s
+5 255 M
+(                rotEsq\(arvore, novo->pai->pai\);) s
+5 245 M
+(            }) s
+5 235 M
+(        }) s
+5 225 M
+(    }) s
+5 215 M
+(    arvore->raiz->cor = BLACK;) s
+5 205 M
+(}) s
+5 185 M
+(void alterarProduto\(RBTree *arvore, char *codProd\) {) s
+5 175 M
+(    if \(arvore->raiz == arvore->nil\) return;) s
+5 155 M
+(    RBNode *mudarNo = arvore->raiz;) s
+5 145 M
+(    alterarProd\(buscar\(mudarNo, arvore->nil, codProd\)\);) s
+5 135 M
+(}) s
+5 115 M
+(void inserirNo\(RBTree *arvore, char *codProduto\) {) s
+5 105 M
+(    RBNode *novo = arvore->raiz;) s
+5 95 M
+(    RBNode *pai = arvore->nil;) s
+5 75 M
+(    while \(novo != arvore->nil\) {) s
+5 65 M
+(        pai = novo;) s
+5 55 M
+(        if \(strcmp\(codProduto, novo->produto->codProd\) == 0\) {) s
+5 45 M
+(            printf\("Produto ja existe\\n"\);) s
+5 35 M
+(            return;) s
+5 25 M
+(        } else if \(strcmp\(codProduto, novo->produto->codProd\) < 0\) {) s
+5 15 M
+(            novo = novo->esq;) s
+5 5 M
+(        } else {) s
+_R
+S
+%%Page: (6) 8
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 6 def
+/fname (TreeRedBlack.c) def
+/fdir (.) def
+/ftail (TreeRedBlack.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(            novo = novo->dir;) s
+5 525 M
+(        }) s
+5 515 M
+(    }) s
+5 505 M
+(    Prod *Produto = cadastrarProd\(codProduto\);) s
+5 485 M
+(    if \(Produto == NULL\) {) s
+5 475 M
+(        printf\("Produto nao foi criado\\n"\);) s
+5 465 M
+(        return;) s
+5 455 M
+(    }) s
+5 435 M
+(    RBNode *novoNo = criarRBNode\(Produto, arvore->nil\);) s
+5 415 M
+(    if \(novoNo == NULL\) {) s
+5 405 M
+(        destroyProd\(Produto\);) s
+5 395 M
+(        printf\("No nao foi criado\\n"\);) s
+5 385 M
+(        return;) s
+5 375 M
+(    }) s
+5 355 M
+(    novoNo->pai = pai;) s
+5 335 M
+(    if \(pai == arvore->nil\) {) s
+5 325 M
+(        arvore->raiz = novoNo;) s
+5 315 M
+(        novoNo->cor = BLACK;) s
+5 305 M
+(    } else if \(strcmp\(codProduto, pai->produto->codProd\) < 0\) {) s
+5 295 M
+(        pai->esq = novoNo;) s
+5 285 M
+(    } else {) s
+5 275 M
+(        pai->dir = novoNo;) s
+5 265 M
+(    }) s
+5 245 M
+(    inserirAjuste\(arvore, novoNo\);) s
+5 235 M
+(}) s
+5 215 M
+(void transplante\(RBTree *arvore, RBNode *u, RBNode *v\) {) s
+5 205 M
+(    if \(u->pai == arvore->nil\) {) s
+5 195 M
+(        arvore->raiz = v;) s
+5 185 M
+(    } else if \(u == u->pai->esq\) {) s
+5 175 M
+(        u->pai->esq = v;) s
+5 165 M
+(    } else {) s
+5 155 M
+(        u->pai->dir = v;) s
+5 145 M
+(    }) s
+5 125 M
+(    v->pai = u->pai;) s
+5 115 M
+(}) s
+5 95 M
+(void removerAjuste\(RBTree *arvore, RBNode *novo\) {) s
+5 85 M
+(    while \(novo != arvore->raiz && novo->cor == BLACK\) {) s
+5 75 M
+(        if \(novo == novo->pai->esq\) {) s
+5 65 M
+(            RBNode *irmao = novo->pai->dir;) s
+5 45 M
+(            if \(irmao->cor == RED\) {) s
+5 35 M
+(                irmao->cor = BLACK;) s
+5 25 M
+(                novo->pai->cor = RED;) s
+5 15 M
+(                rotEsq\(arvore, novo->pai\);) s
+5 5 M
+(                irmao = novo->pai->dir;) s
+_R
+S
+%%Page: (7) 9
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 7 def
+/fname (TreeRedBlack.c) def
+/fdir (.) def
+/ftail (TreeRedBlack.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(            }) s
+5 515 M
+(            if \(irmao->esq->cor == BLACK && irmao->dir->cor == BLACK\) {) s
+5 505 M
+(                irmao->cor = RED;) s
+5 495 M
+(                novo = novo->pai;) s
+5 485 M
+(            } else {) s
+5 475 M
+(                if \(irmao->dir->cor == BLACK\) {) s
+5 465 M
+(                    irmao->esq->cor = BLACK;) s
+5 455 M
+(                    irmao->cor = RED;) s
+5 445 M
+(                    rotDir\(arvore, irmao\);) s
+5 435 M
+(                    irmao = novo->pai->dir;) s
+5 425 M
+(                }) s
+5 405 M
+(                irmao->cor = novo->pai->cor;) s
+5 395 M
+(                novo->pai->cor = BLACK;) s
+5 385 M
+(                irmao->dir->cor = BLACK;) s
+5 375 M
+(                rotEsq\(arvore, novo->pai\);) s
+5 365 M
+(                novo = arvore->raiz;) s
+5 355 M
+(            }) s
+5 345 M
+(        } else {) s
+5 335 M
+(            RBNode *irmao = novo->pai->esq;) s
+5 315 M
+(            if \(irmao->cor == RED\) {) s
+5 305 M
+(                irmao->cor = BLACK;) s
+5 295 M
+(                novo->pai->cor = RED;) s
+5 285 M
+(                rotDir\(arvore, novo->pai\);) s
+5 275 M
+(                irmao = novo->pai->esq;) s
+5 265 M
+(            }) s
+5 245 M
+(            if \(irmao->dir->cor == BLACK && irmao->esq->cor == BLACK\) {) s
+5 235 M
+(                irmao->cor = RED;) s
+5 225 M
+(                novo = novo->pai;) s
+5 215 M
+(            } else {) s
+5 205 M
+(                if \(irmao->esq->cor == BLACK\) {) s
+5 195 M
+(                    irmao->dir->cor = BLACK;) s
+5 185 M
+(                    irmao->cor = RED;) s
+5 175 M
+(                    rotEsq\(arvore, irmao\);) s
+5 165 M
+(                    irmao = novo->pai->esq;) s
+5 155 M
+(                }) s
+5 135 M
+(                irmao->cor = novo->pai->cor;) s
+5 125 M
+(                novo->pai->cor = BLACK;) s
+5 115 M
+(                irmao->esq->cor = BLACK;) s
+5 105 M
+(                rotDir\(arvore, novo->pai\);) s
+5 95 M
+(                novo = arvore->raiz;) s
+5 85 M
+(            }) s
+5 75 M
+(        }) s
+5 65 M
+(    }) s
+5 45 M
+(    novo->cor = BLACK;) s
+5 35 M
+(}) s
+5 25 M
+(void removerNo\(RBTree *arvore, char *codProduto\) {) s
+5 15 M
+(    RBNode *z = arvore->raiz;) s
+5 5 M
+(    while \(z != arvore->nil && strcmp\(codProduto, z->produto->codProd\) != 0\) {) s
+_R
+S
+%%Page: (8) 10
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 8 def
+/fname (TreeRedBlack.c) def
+/fdir (.) def
+/ftail (TreeRedBlack.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(        if \(strcmp\(codProduto, z->produto->codProd\) < 0\) {) s
+5 525 M
+(            z = z->esq;) s
+5 515 M
+(        } else {) s
+5 505 M
+(            z = z->dir;) s
+5 495 M
+(        }) s
+5 485 M
+(    }) s
+5 465 M
+(    if \(z == arvore->nil\) {) s
+5 455 M
+(        printf\("Produto nao existe\\n"\);) s
+5 445 M
+(        return;) s
+5 435 M
+(    }) s
+5 415 M
+(    RBNode *y = z;) s
+5 405 M
+(    RBNode *x;) s
+5 395 M
+(    Cor corOriginal = y->cor;) s
+5 375 M
+(    if \(z->esq == arvore->nil\) {) s
+5 365 M
+(        x = z->dir;) s
+5 355 M
+(        transplante\(arvore, z, z->dir\);) s
+5 345 M
+(    } else if \(z->dir == arvore->nil\) {) s
+5 335 M
+(        x = z->esq;) s
+5 325 M
+(        transplante\(arvore, z, z->esq\);) s
+5 315 M
+(    } else {) s
+5 305 M
+(        y = min\(arvore, z->dir\);) s
+5 285 M
+(        corOriginal = y->cor;) s
+5 275 M
+(        x = y->dir;) s
+5 255 M
+(        if \(y->pai == z\) {) s
+5 245 M
+(            x->pai = y;) s
+5 235 M
+(        } else {) s
+5 225 M
+(            transplante\(arvore, y, y->dir\);) s
+5 215 M
+(            y->dir = z->dir;) s
+5 205 M
+(            y->dir->pai = y;) s
+5 195 M
+(        }) s
+5 175 M
+(        transplante\(arvore, z, y\);) s
+5 165 M
+(        y->esq = z->esq;) s
+5 155 M
+(        y->esq->pai = y;) s
+5 145 M
+(        y->cor = z->cor;) s
+5 135 M
+(    }) s
+5 115 M
+(    destroyProd\(z->produto\);) s
+5 105 M
+(    free\(z\);) s
+5 85 M
+(    if \(corOriginal == BLACK\) { removerAjuste\(arvore, x\); }) s
+5 75 M
+(}) s
+_R
+S
+%%Page: (1) 11
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (TreeRedBlack.h) def
+/fdir (.) def
+/ftail (TreeRedBlack.h) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(#include "Produto.h") s
+5 525 M
+(#include <stdbool.h>) s
+5 515 M
+(#include <stdio.h>) s
+5 505 M
+(#include <stdlib.h>) s
+5 495 M
+(#include <string.h>) s
+5 475 M
+(typedef enum { RED, BLACK } Cor;) s
+5 455 M
+(typedef struct RBNode {) s
+5 445 M
+(    Prod *produto;) s
+5 435 M
+(    Cor cor;) s
+5 415 M
+(    struct RBNode *esq;) s
+5 405 M
+(    struct RBNode *dir;) s
+5 395 M
+(    struct RBNode *pai;) s
+5 385 M
+(} RBNode;) s
+5 365 M
+(typedef struct RBTree {) s
+5 355 M
+(    struct RBNode *raiz;) s
+5 345 M
+(    struct RBNode *nil;) s
+5 335 M
+(} RBTree;) s
+5 315 M
+(RBTree *initialize\(\);) s
+5 295 M
+(void inserirNo\(RBTree *arvore, char *codProd\);) s
+5 285 M
+(void removerNo\(RBTree *arvore, char *codProd\);) s
+5 275 M
+(void alterarProduto\(RBTree *arvore, char *codProd\);) s
+5 255 M
+(void rotDir\(RBTree *arvore, RBNode *novo\);) s
+5 245 M
+(void rotEsq\(RBTree *arvore, RBNode *novo\);) s
+5 225 M
+(Prod *buscar\(RBNode *raiz, RBNode *nil, char *codProd\);) s
+5 215 M
+(RBNode *criarRBNode\(Prod *produto, RBNode *nil\);) s
+5 205 M
+(RBNode *criarSentinela\(\);) s
+5 185 M
+(RBNode *min\(RBTree *arvore, RBNode *novo\);) s
+5 165 M
+(void emOrdem\(RBNode *raiz, RBNode *nil\);) s
+5 155 M
+(void exibirEmOrdem\(RBTree *arvore\);) s
+5 145 M
+(void porNivel\(RBTree *arvore\);) s
+5 135 M
+(void destroy\(RBTree *arvore\);) s
+_R
+S
+%%Page: (1) 12
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (Produto.c) def
+/fdir (.) def
+/ftail (Produto.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(#include "Produto.h") s
+5 525 M
+(#include <stdio.h>) s
+5 505 M
+(Prod *cadastrarProd\(char *codProd\) {) s
+5 495 M
+(    Prod *produto = malloc\(sizeof\(Prod\)\);) s
+5 475 M
+(    if \(produto == NULL\) return NULL;) s
+5 455 M
+(    int qtdEstoque;) s
+5 445 M
+(    double preco;) s
+5 435 M
+(    char descricao[51];) s
+5 415 M
+(    strcpy\(produto->codProd, codProd\);) s
+5 405 M
+(    printf\("Digite a descricao do produto, 50 char maximo: "\);) s
+5 395 M
+(    fgets\(descricao, 51, stdin\);) s
+5 385 M
+(    descricao[strcspn\(descricao, "\\n"\)] = '\\0';) s
+5 375 M
+(    printf\("Digite o preco do produto: "\);) s
+5 365 M
+(    scanf\("%lf", &preco\);) s
+5 355 M
+(    limpaBuffer\(\);) s
+5 345 M
+(    printf\("Digite a quantidade em estoque: "\);) s
+5 335 M
+(    scanf\("%d", &qtdEstoque\);) s
+5 315 M
+(    strcpy\(produto->descricaoProd, descricao\);) s
+5 305 M
+(    produto->precoProd = preco;) s
+5 295 M
+(    produto->qtdEstoqueProd = qtdEstoque;) s
+5 275 M
+(    return produto;) s
+5 265 M
+(}) s
+5 245 M
+(void destroyProd\(Prod *produto\) { free\(produto\); }) s
+5 225 M
+(void exibirProd\(Prod *produto\) {) s
+5 205 M
+(    printf\("codigo produto: %s\\n", produto->codProd\);) s
+5 195 M
+(    printf\("descricao do produto: %s\\n", produto->descricaoProd\);) s
+5 185 M
+(    printf\("preco do produto: %.2f\\n", produto->precoProd\);) s
+5 175 M
+(    printf\("quantidade em estoque: %d\\n", produto->qtdEstoqueProd\);) s
+5 165 M
+(}) s
+5 145 M
+(void alterarProd\(Prod *produto\) {) s
+5 135 M
+(    if \(produto == NULL\) {) s
+5 125 M
+(        printf\("Produto nao encontrado para alteracao\\n"\);) s
+5 115 M
+(        return;) s
+5 105 M
+(    }) s
+5 95 M
+(    int decisao;) s
+5 75 M
+(    printf\("1 - Apenas preco\\n"\);) s
+5 65 M
+(    printf\("2 - Apenas a quantidade em estoque\\n"\);) s
+5 55 M
+(    printf\("3 - Preco e quantidade em estoque\\n"\);) s
+5 45 M
+(    printf\("0 - sair\\n"\);) s
+5 35 M
+(    printf\("O que deseja alterar: "\);) s
+5 25 M
+(    scanf\("%d", &decisao\);) s
+5 15 M
+(    limpaBuffer\(\);) s
+_R
+S
+%%Page: (2) 13
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 2 def
+/fname (Produto.c) def
+/fdir (.) def
+/ftail (Produto.c) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(    switch \(decisao\) {) s
+5 525 M
+(    case 1:) s
+5 515 M
+(        printf\("Digite o novo preco do produto: "\);) s
+5 505 M
+(        scanf\("%lf", &produto->precoProd\);) s
+5 495 M
+(        break;) s
+5 485 M
+(    case 2:) s
+5 475 M
+(        printf\("Digite a nova quantidade em estoque: "\);) s
+5 465 M
+(        scanf\("%d", &produto->qtdEstoqueProd\);) s
+5 455 M
+(        break;) s
+5 445 M
+(    case 3:) s
+5 435 M
+(        printf\("Digite o novo preco do produto: "\);) s
+5 425 M
+(        scanf\("%lf", &produto->precoProd\);) s
+5 415 M
+(        printf\("Digite a nova quantidade em estoque: "\);) s
+5 405 M
+(        scanf\("%d", &produto->qtdEstoqueProd\);) s
+5 395 M
+(        break;) s
+5 385 M
+(    case 0:) s
+5 375 M
+(        break;) s
+5 365 M
+(    default:) s
+5 355 M
+(        printf\("opcao invalida"\);) s
+5 345 M
+(        break;) s
+5 335 M
+(    }) s
+5 325 M
+(}) s
+_R
+S
+%%Page: (1) 14
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (Produto.h) def
+/fdir (.) def
+/ftail (Produto.h) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+5 535 M
+(#include <stdio.h>) s
+5 525 M
+(#include <stdlib.h>) s
+5 515 M
+(#include <string.h>) s
+5 495 M
+(typedef struct produto {) s
+5 485 M
+(    char codProd[21];) s
+5 475 M
+(    char descricaoProd[51];) s
+5 465 M
+(    double precoProd;) s
+5 455 M
+(    int qtdEstoqueProd;) s
+5 445 M
+(} Prod;) s
+5 425 M
+(Prod *cadastrarProd\(char *codProduto\);) s
+5 415 M
+(void destroyProd\(Prod *produto\);) s
+5 405 M
+(void exibirProd\(Prod *produto\);) s
+5 395 M
+(void alterarProd\(Prod *produto\);) s
+5 385 M
+(void limpaBuffer\(\);) s
+_R
+S
+%%Trailer
+%%Pages: 14
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF
